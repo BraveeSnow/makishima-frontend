@@ -1,3 +1,5 @@
+import { LogInIcon, MoonIcon, SunIcon } from "lucide-react";
+
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -6,25 +8,30 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
+import { useTheme } from "@/lib/theme-provider";
 
 export function Navbar() {
   return (
     <div className="p-2 border-b-1">
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuLink className="font-bold" href="/">
-              Makishima
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Getting Started</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <GettingStartedContent />
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+      <div className="flex justify-between items-center max-w-screen-lg mx-auto">
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink className="font-bold" href="/">
+                Makishima
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Getting Started</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <GettingStartedContent />
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+        <UserInteractionMenu />
+      </div>
     </div>
   );
 }
@@ -32,7 +39,7 @@ export function Navbar() {
 function GettingStartedContent() {
   return (
     <ul className="grid gap-2 grid-cols-[0.75fr_1fr] w-128">
-      <li className="row-span-2 rounded-md bg-gradient-to-b from-blue-100 to-blue-200">
+      <li className="row-span-2 rounded-md">
         <SimpleNavLink
           className="h-full justify-end"
           title="Invite Makishima"
@@ -71,5 +78,27 @@ function SimpleNavLink({
       <b className="font-semibold">{title}</b>
       <p className="text-muted-foreground">{children}</p>
     </NavigationMenuLink>
+  );
+}
+
+function UserInteractionMenu() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div className="space-x-2">
+      <Button
+        className="cursor-pointer"
+        variant="outline"
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      >
+        {theme === "dark" ? <MoonIcon /> : <SunIcon />}
+      </Button>
+      <Button asChild>
+        <a href="/api/oauth/authorization/discord">
+          <LogInIcon />
+          Log In with Discord
+        </a>
+      </Button>
+    </div>
   );
 }
