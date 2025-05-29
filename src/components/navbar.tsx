@@ -1,5 +1,13 @@
 import { LogInIcon, MoonIcon, SunIcon } from "lucide-react";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -8,7 +16,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth-provider";
 import { useTheme } from "@/lib/theme-provider";
 
 export function Navbar() {
@@ -83,9 +91,10 @@ function SimpleNavLink({
 
 function UserInteractionMenu() {
   const { theme, setTheme } = useTheme();
+  const { user, setUser } = useAuth();
 
   return (
-    <div className="space-x-2">
+    <div className="flex items-center space-x-2">
       <Button
         className="cursor-pointer"
         variant="outline"
@@ -93,12 +102,39 @@ function UserInteractionMenu() {
       >
         {theme === "dark" ? <MoonIcon /> : <SunIcon />}
       </Button>
-      <Button asChild>
-        <a href="/api/oauth/authorization/discord">
-          <LogInIcon />
-          Log In with Discord
-        </a>
-      </Button>
+      {user ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button className="flex gap-3" variant="secondary">
+              <Avatar className="size-6">
+                <AvatarImage
+                  src={user.avatarUrl}
+                  alt={`${user.username}'s avatar`}
+                />
+                <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+              </Avatar>
+              {user.username}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-40">
+            <DropdownMenuItem
+              onClick={() => {
+                setUser(null);
+                // TODO: add logout logic here
+              }}
+            >
+              Log Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button asChild>
+          <a href="/api/oauth2/authorization/discord">
+            <LogInIcon />
+            Log In with Discord
+          </a>
+        </Button>
+      )}
     </div>
   );
 }
